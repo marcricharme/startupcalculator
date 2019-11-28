@@ -1,0 +1,470 @@
+
+<!-- Landing page -->
+<div id="landing">
+    <div id="main">
+        <div id="filter"></div>
+        <div id="main-bg"></div>
+        <sharebuttons></sharebuttons>
+        <h1>Startup Investment Return Calculator</h1>
+        <button id="get-started" ng-click="start()">Get started</button>
+    </div>
+    <div id="copy-wrapper">
+        <p id="copy">Investments featured on 1000 Angels are typically led by <span>some of the best venture fund managers</span> in the world.</p>
+    </div>
+</div>
+
+<!-- Shade -->
+<div class="shade"></div>
+<!-- Footer -->
+<div id="inputs-footer">
+    <div id="progress" style="{{ getProgressBarStyle() }}">
+        <span style="{{ getProgressPos() }}">{{ progress }}</span>
+    </div>
+    <div id="arrows">
+        <a class="arrow" id="arrow-up" ng-click="previous()">
+            <span class="fa fa-icon fa-angle-left"></span>
+        </a>
+        <a class="arrow" id="arrow-down" ng-click="next()">
+            <span class="fa fa-icon fa-angle-right"></span>
+        </a>
+    </div>
+    <div id="disabled-arrows">
+        <a class="arrow">
+            <span class="fa fa-icon fa-angle-left"></span>
+        </a>
+        <a class="arrow">
+            <span class="fa fa-icon fa-angle-right"></span>
+        </a>
+    </div>
+</div>
+
+<!-- User input 1 - N years of revenue projections -->
+<div class="input" id="input-1">
+    <p class="question">How many years of <strong>company revenue projections</strong> do you have?</p>
+    <p class="question-help">At least 3 years required</p>
+    <div id="choices">
+        <span ng-click="setProjections(3)" class="choice" ng-class="{'selected': projections.length === 3}">3 years</span>
+        <span ng-click="setProjections(4)" class="choice" ng-class="{'selected': projections.length === 4}">4 years</span>
+        <span ng-click="setProjections(5)" class="choice" ng-class="{'selected': projections.length === 5}">5 years</span>
+    </div>
+</div>
+
+<!-- User input 2 - revenue projections -->
+<div class="input" id="input-2">
+    <p class="question">Input the company's projected annual <strong>revenue</strong></p>
+    <p class="invalid-input">The inputs can't be zero.</p>
+    <table class="projection">
+        <tr>
+            <td class="cell-shade"></td>
+            <td class="cell-shade"></td>
+        </tr>
+        <tr ng-repeat="projection in Calculator.inputs.revenueProjections track by $index">
+            <td>{{ 2017 + $index }}</td>
+            <td>
+                <span>$</span>
+                <input type="text" ng-model="Calculator.inputs.revenueProjections[$index]" ng-focus="focused($event)" comma-separated />
+            </td>
+        </tr>
+        <tr>
+            <td class="cell-shade"></td>
+            <td class="cell-shade"></td>
+        </tr>
+    </table>
+    <button class="next-step" ng-click="next()">Enter</button>
+</div>
+
+
+<!-- User input 3 - COGS projections -->
+<div class="input" id="input-3">
+    <p class="ttip">
+        <strong>Cost of Goods Sold</strong> are the total direct costs associated with the revenue projected.
+        <span class="triangle-bg"></span>
+        <span class="triangle"></span>
+    </p>
+    <p class="question">Input the company's projected annual <strong class="tooltip-anchor">cost of goods sold</strong></p>
+    <p class="invalid-input">The inputs can't be zero.</p>
+    <table class="projection">
+        <tr>
+            <td class="cell-shade"></td>
+            <td class="cell-shade"></td>
+        </tr>
+        <tr ng-repeat="projection in Calculator.inputs.cogsProjections track by $index">
+            <td>{{ 2017 + $index }}</td>
+            <td>
+                <span>$</span>
+                <input type="text" ng-model="Calculator.inputs.cogsProjections[$index]" ng-focus="focused($event)" comma-separated />
+            </td>
+        </tr>
+        <tr>
+            <td class="cell-shade"></td>
+            <td class="cell-shade"></td>
+        </tr>
+    </table>
+    <button class="next-step" ng-click="next()">Enter</button>
+    <a class="skip" ng-click="skip(1, 3)">Skip</a>
+</div>
+
+
+<!-- User input 4 - Operating expense projections -->
+<div class="input" id="input-4">
+    <p class="ttip">
+        <strong>Operating Expense</strong> is the total overhead generated from projected revenues.
+        <span class="triangle-bg"></span>
+        <span class="triangle"></span>
+    </p>
+    <p class="question">Input the projected annual <strong class="tooltip-anchor">operating expense</strong></p>
+    <p class="invalid-input">The inputs can't be zero.</p>
+    <table class="projection">
+        <tr>
+            <td class="cell-shade"></td>
+            <td class="cell-shade"></td>
+        </tr>
+        <tr ng-repeat="projection in Calculator.inputs.opexProjections track by $index">
+            <td>{{ 2017 + $index }}</td>
+            <td>
+                <span>$</span>
+                <input type="text" ng-model="Calculator.inputs.opexProjections[$index]" ng-focus="focused($event)" comma-separated />
+            </td>
+        </tr>
+        <tr>
+            <td class="cell-shade"></td>
+            <td class="cell-shade"></td>
+        </tr>
+    </table>
+    <button class="next-step" ng-click="next()">Enter</button>
+    <a class="skip" ng-click="skip(1, 4)">Skip</a>
+</div>
+
+
+<!-- User input 5 - Current round total -->
+<div class="input" id="input-5">
+    <p class="question">How much is the company <strong>currently raising (total)</strong>?</p>
+    <p class="invalid-input">The inputs can't be zero.</p>
+    <div class="input-wrapper">
+        <span>$</span>
+        <input type="text" id="current-round" ng-model="Calculator.inputs.currentRound" ng-focus="focused($event)" comma-separated />
+    </div>
+    <button class="next-step" ng-click="next()">Enter</button>
+</div>
+
+
+<!-- User input 6 - pre-money valuation -->
+<div class="input" id="input-6">
+    <p class="ttip" id="ttip-6-1">
+        <strong>Pre-money valuation</strong> is the value ascribed to the company's equity before the investment is made.
+        <span class="triangle-bg"></span>
+        <span class="triangle"></span>
+    </p>
+    <p class="ttip" id="ttip-6-2">
+        Typically, a convertible debt round will have a valuation cap included as part of the terms. It limits the maximum valuation an investor will convert their investment into shares upon the next qualified round of financing. If the convertible note is uncapped, the potential returns cannot be calculated.
+        <span class="triangle-bg"></span>
+        <span class="triangle"></span>
+    </p>
+    <p class="question">What is the <strong class="tooltip-anchor" data-ttip="6-1">pre-money valuation</strong> or <strong class="tooltip-anchor" data-ttip="6-2">valuation cap</strong> of the current round?</p>
+    <p class="invalid-input">The inputs can't be zero.</p>
+    <div class="input-wrapper">
+        <span>$</span>
+        <input type="text" id="pre-money" ng-model="Calculator.inputs.preMoney" ng-focus="focused($event)" comma-separated />
+    </div>
+    <button class="next-step" ng-click="next()">Enter</button>
+</div>
+
+
+<!-- User input 7 - option pool -->
+<div class="input" id="input-7">
+    <p class="ttip">
+        <strong>An employee option pool</strong> is sometimes set up to allocate a portion of the equity to employee stock compensation. It's typically between 10-15% depending on the size and stage of the company. You can find out from the founder if a new pool is being created concurrent with the round.
+        <span class="triangle-bg"></span>
+        <span class="triangle"></span>
+    </p>
+    <p class="question">What percentage will be allocated to a <strong class="tooltip-anchor">new employee option pool</strong>?</p>
+    <p class="invalid-input">The inputs can't be zero.</p>
+    <div class="input-wrapper">
+        <span>%</span>
+        <input type="number" min=0 max=100 step="1" id="option-pool" ng-model="Calculator.inputs.optionPool"  ng-focus="focused($event)"/>
+    </div>
+    <button class="next-step" ng-click="next()">Enter</button>
+    <a class="skip" ng-click="skip(1, 7)">Skip</a>
+</div>
+
+
+<!-- User input 8 - next round -->
+<div class="input" id="input-8">
+    <p class="ttip">
+        Will the company need to raise more capital within the next X years? If so provide the estimated total amount <strong>here</strong>.
+        <span class="triangle-bg"></span>
+        <span class="triangle"></span>
+    </p>
+    <p class="question">How much <strong class="tooltip-anchor">additional capital</strong> do you expect the company to raise in the next round?</p>
+    <p class="invalid-input">The inputs can't be zero.</p>
+    <div class="input-wrapper">
+        <span>$</span>
+        <input type="text" id="next-round" ng-model="Calculator.inputs.nextRound" ng-focus="focused($event)" comma-separated />
+    </div>
+    <button class="next-step" ng-click="next()">Enter</button>
+    <a class="skip" ng-click="skip(2, 8)">Skip</a>
+</div>
+
+
+<!-- User input 9 - next pre-money -->
+<div class="input" id="input-9">
+    <p class="question">What do you expect the <strong>pre-money valuation</strong> of the subsequent round to be?</p>
+    <p class="invalid-input">The inputs can't be zero.</p>
+    <div class="input-wrapper">
+        <span>$</span>
+        <input type="text" id="next-pre-money" ng-model="Calculator.inputs.nextRoundPreMoney" ng-focus="focused($event)" comma-separated />
+    </div>
+    <button class="next-step" ng-click="next()">Enter</button>
+</div>
+
+
+<!-- User input 10 - sales multiple -->
+<div class="input" id="input-10">
+    <p class="ttip" id="ttip-10-1">
+        <strong>A sales multiple</strong> is used to estimate the value of the company at exit. Rule of thumb: companies tend to be within 1-5 times sales multiple.
+        <span class="triangle-bg"></span>
+        <span class="triangle"></span>
+    </p>
+    <p class="ttip" id="ttip-10-2">
+        <strong>A terminal value</strong> is the expected value of the company at exit, or an estimtae of the company value at a future date.
+        <span class="triangle-bg"></span>
+        <span class="triangle"></span>
+    </p>
+    <p class="question">What <strong class="tooltip-anchor" data-ttip="10-1">sales multiple</strong> would you like to apply to estimate the <strong class="tooltip-anchor" data-ttip="10-2">terminal value</strong> at exit?</p>
+    <p class="invalid-input">The inputs can't be zero.</p>
+    <div class="input-wrapper">
+        <input type="number" min=1 max=10 step=1 ng-model="Calculator.inputs.salesMultiple" id="sales-multiple" ng-focus="focused($event)" />
+        <span>X</span>
+    </div>
+    <button class="next-step" ng-click="next()">Enter</button>
+</div>
+
+
+<!-- User input 11 - investment -->
+<div class="input" id="input-11">
+    <p class="question">How much are you considering investing in the current round?</p>
+    <p class="invalid-input">The inputs can't be zero.</p>
+    <div class="input-wrapper">
+        <span>$</span>
+        <input type="text" id="investment" ng-model="Calculator.inputs.investment" ng-focus="focused($event)" comma-separated />
+    </div>
+    <button class="next-step" ng-click="next()">Enter</button>
+</div>
+
+
+<!-- User info input -->
+<div class="input" id="user-info">
+    <h3>Please enter your information to get the results:</h3>
+    <span id="user-info-warning">All fields are mandatory.</span>
+    <input type="text" id="user-firstname" ng-model="Calculator.inputs.firstName" placeholder="First name"/>
+    <input type="text" id="user-lastname"  ng-model="Calculator.inputs.lastName" placeholder="Last name"/>
+    <input type="text" id="user-email" placeholder="Email address"/>
+    <p id="email-disclaimer">*Don't worry, we will never share your e-mail.</p>
+    <div id="user-info-cb">
+        <p>How would you describe yourself?</p>
+        <label>
+            <input type="checkbox" id="isFounderCb" ng-model="Calculator.inputs.isFounder"/>
+            <span>Founder</span>
+        </label>
+        <label>
+            <input type="checkbox" id="isInvestorCb" ng-model="Calculator.inputs.isInvestor"/>
+            <span>Investor</span>
+        </label>
+    </div>
+    <button class="next-step" ng-click="getResults()">Get my results!</button>
+</div>
+
+
+<!-- Results -->
+<div id="results">
+    <sharebuttons></sharebuttons>
+    <div id="header-bg"></div>
+    <h1>STARTUP INVESTMENT RETURN CALCULATOR</h1>
+    <div id="company-name-wrapper">
+        <label>Company name</label>
+        <input type="text" id="company-name" ng-model="Calculator.inputs.company" />
+    </div>
+    <div id="tweak-investment">
+        <p>How much are you considering investing in the current round?</p>
+        <div class="input-wrapper">
+            <span>$</span>
+            <input type="text" id="alt-investment" ng-model="Calculator.inputs.altInvestment" comma-separated />
+            <button ng-click="Calculator.calculate()">Recalculate</button>
+        </div>
+    </div>
+
+    <div id="extract">
+        <h2>Your <span>${{ Calculator.results.investment | USNumber }}</span> investment could be worth <span>${{ Calculator.results.currentInvestorInvestmentValue | USNumber }}</span> at exit.</h2>
+        <!-- Results - Exit values -->
+        <table class="results" id="exit-values">
+            <tr>
+                <th colspan=2>Exit values</th>
+                <td colspan=4 rowspan=7 id="summary">
+                    According to our analysis, your investment of <strong>${{ Calculator.results.investment | USNumber }}</strong> could return <strong>${{ Calculator.results.currentInvestorInvestmentValue | USNumber }}</strong> in <strong>{{ Calculator.results.exitYear }} years</strong>. This assumes that the company achieves <strong>${{ Calculator.results.revenueProjections[Calculator.results.revenueProjections.length-1] | USNumber }}</strong> in revenues and is acquired for <strong>${{ Calculator.results.enterpriseValue | USNumber }}</strong>, or <strong>{{ Calculator.results.salesMultiple }}X</strong> revenues. In this case, the IRR on your investment would be <strong>{{ Calculator.results.IRR | singleDigitPercentage }}%</strong> and your cash on-cash return would be <strong>{{ Calculator.results.cashReturn }}X</strong>.
+                </td>
+            </tr>
+            <tr>
+                <td>Exit year</td>
+                <td>{{ Calculator.results.exitYear }}</td>
+            </tr>
+            <tr>
+                <td>Sales multiple</td>
+                <td>{{ Calculator.results.salesMultiple }}X</td>
+            </tr>
+            <tr>
+                <td>Enterprise value ($mm)</td>
+                <td>${{ Calculator.results.enterpriseValue | millions }}</td>
+            </tr>
+            <tr>
+                <td>Current investors' interest value ($mm)</td>
+                <td>${{ Calculator.results.currentInvestmentValue | millions }}</td>
+            </tr>
+            <tr>
+                <td>IRR (Internal rate of return)</td>
+                <td>{{ Calculator.results.IRR | singleDigitPercentage }}%</td>
+            </tr>
+            <tr>
+                <td>Cash on cash return</td>
+                <td>{{ Calculator.results.cashReturn }}X</td>
+            </tr>
+        </table>
+
+        <button ng-click="sendResults()">Email my results</button>
+        <p id="results-sent">The results have been sent to your e-mail.</p>
+    </div>
+
+    <div id="tweak-projections">
+        <h2>Sensitivity Analysis</h2>
+        <!-- Sliders -->
+        <div id="sliders">
+            <p>You can adjust the revenue projections and expected sales multiple at exit to provide <strong>sensitivity</strong> analysis of your assumptions. This helps you test scenarios in which the founders do not meet revenue expectations, or the capital markets have softened.</p>
+            <div id="slider-container">
+                <div class="slider-wrapper">
+                    <span class="slider-label">Revenue haircut</span>
+                    <div class="slider-fix">
+                        <span class="slider" id="haircutSlider"></span>
+                    </div>
+                    <span class="slider-value" id="haircutSliderValue">100%</span>
+                </div>
+                <div class="slider-wrapper">
+                    <span class="slider-label">Sales multiple</span>
+                    <div class="slider-fix">
+                        <span class="slider" id="salesMultipleSlider"></span>
+                    </div>
+                    <span class="slider-value" id="salesMultipleSliderValue">{{ Calculator.results.salesMultiple }}X</span>
+                </div>
+            </div>
+            <button ng-click="updateCalculation()">Update</button>
+        </div>
+        <!-- Results - Financial projections  -->
+        <table class="results" id="financial-projections">
+            <tr>
+                <th>Financial projections <span>(Dollars in thousands)</span></th>
+                <th class="center-align" ng-repeat="projection in projections track by $index">{{ 2017 + $index }}</td>
+            </tr>
+            <tr>
+                <td>Revenue</td>
+                <td class="right-align" ng-repeat="revenue in Calculator.results.revenueProjections track by $index">${{ revenue | thousands }}</td>
+            </tr>
+            <tr class="border-section" ng-if="Calculator.results.displayCogs">
+                <td>Cost of goods sold</td>
+                <td class="right-align" ng-repeat="cogs in Calculator.results.cogsProjections track by $index">
+                    <span ng-show="cogs">${{ cogs | thousands}}</span>
+                    <span ng-hide="cogs">0</span>
+                </td>
+            </tr>
+            <tr ng-if="Calculator.results.displayCogs">
+                <td>Gross profit</td>
+                <td class="right-align" ng-repeat="profit in Calculator.results.grossProfitProjections track by $index">
+                    <span ng-show="profit">${{ profit | thousands }}</span>
+                    <span ng-hide="profit">-</span>
+                </td>
+            </tr>
+            <tr class="border-section" ng-if="Calculator.results.displayOpex">
+                <td>Operating expense</td>
+                <td class="right-align" ng-repeat="opex in Calculator.results.opexProjections track by $index">
+                    <span ng-show="opex">${{ opex | thousands }}</span>
+                    <span ng-hide="opex">0</span>
+                </td>
+            </tr>
+            <tr ng-if="Calculator.results.displayOpex">
+                <td>Operating income</td>
+                <td class="right-align" ng-repeat="ebitda in Calculator.results.ebitdaProjections track by $index">
+                    <span ng-show="ebitda">${{ ebitda | thousands }}</span>
+                    <span ng-hide="ebitda">-</span>
+                </td>
+            </tr>
+        </table>
+
+
+
+        <!-- Results - Pro Forma Current Round  -->
+        <table class="results" id="pro-forma-current" style="{{ getCurrentProFormaWidth() }}">
+            <tr>
+                <th colspan=2>Pro Forma Current Round <span>(Dollars in thousands)</span></th>
+            </tr>
+            <tr>
+                <td>Current investment</td>
+                <td>${{ Calculator.results.currentRound | thousands }}</td>
+            </tr>
+            <tr>
+                <td>New option pool</td>
+                <td>{{ Calculator.results.optionPool }}%</td>
+            </tr>
+            <tr>
+                <td>Pre-money valuation</td>
+                <td>${{ Calculator.results.preMoney | thousands }}</td>
+            </tr>
+            <tr>
+                <td>Post-money valuation</td>
+                <td>${{ Calculator.results.postMoney | thousands }}</td>
+            </tr>
+            <tr>
+                <td>Current investors' interest</td>
+                <td>{{ Calculator.results.currentInterest | singleDigitPercentage }}%</td>
+            </tr>
+        </table>
+
+
+
+
+        <!-- Results - Pro Forma Current Round  -->
+        <table class="results" id="pro-forma-future" ng-if="Calculator.results.nextRound">
+            <tr>
+                <th colspan=2>Pro Forma Future Round <span>(Dollars in thousands)</span></th>
+            </tr>
+            <tr>
+                <td>Future money raised</td>
+                <td>${{ Calculator.results.nextRound | thousands }}</td>
+            </tr>
+            <tr>
+                <td>Projected pre-money valuation</td>
+                <td>${{ Calculator.results.nextRoundPreMoney | thousands }}</td>
+            </tr>
+            <tr>
+                <td>Projected post-money valuation</td>
+                <td>${{ Calculator.results.nextRoundPostMoney | thousands }}</td>
+            </tr>
+            <tr>
+                <td>Current Investors' new interest</td>
+                <td>{{ Calculator.results.currentInterestValue | singleDigitPercentage }}%</td>
+            </tr>
+            <tr>
+                <td>Current investors' valuation</td>
+                <td>${{ Calculator.results.currentValuation | thousands }}</td>
+            </tr>
+        </table>
+
+        <a id="learn-more" href="http://1000angels.com?refcode=calculator" target="_blank">Learn more about 1000Angels</a>
+
+        <a id="start-again" ng-click="restart()">Start again <span class="fa fa-icon fa-arrow-right"></span></a>
+
+        <hr/>
+
+        <p id="disclaimer">
+            Disclaimer: Results shown by the 1000 Angels return calculator is for information purposes only and should not be regarded as an investment return guarantee, recommendation, offer to sell, or a solicitation of an offer to buy any financial product. Private investments involve a high degree of risk, and investors should be able to afford losing their entire investment without a change in their lifestyle. Private investments should comprise only a portion of an investor’s diversified investment portfolio, as a part of an aggressive asset allocation strategy.  Private investments are generally illiquid, and investors who do not have a long-term time horizon or who may have liquidity needs should not invest. You are strongly encouraged to consult with your professional advisors before investing in any private investment.
+        </p>
+
+    </div>
+
+</div>
